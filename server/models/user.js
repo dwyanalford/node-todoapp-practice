@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+var mongoose = require('mongoose');
 
 // create User model with validation
 var User = mongoose.model('User', {
@@ -10,4 +10,4 @@ var User = mongoose.model('User', {
   }
 });
 
-module.exports = {User};
+module.exports = { User };

@@ -1,12 +1,11 @@
-const mongoose = require('mongoose');
+var mongoose = require('mongoose');
 
 // create Todo model with validation
 var Todo = mongoose.model('Todo', {
   text: {
     type: String,
     required: true,
-    minLength: 1,
-    trim: true  // remove leading and trailing spaces
+    minLength: 1
   },
   completed: {
     type: Boolean,
@@ -18,4 +17,4 @@ var Todo = mongoose.model('Todo', {
   },
 });
 
-module.exports = {Todo};
+module.exports = { Todo };
