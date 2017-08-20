@@ -28,4 +28,4 @@ app.listen(3000, () => {
 });
 
 // made accessible for testing purposes
-// module.exports = { app };
+module.exports = { app };
