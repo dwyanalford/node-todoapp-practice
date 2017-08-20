@@ -1,6 +1,7 @@
 // root of app
-var express = require('express');
-var bodyParser = require('body-parser');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
 const { ObjectID } = require('mongodb');
 
 var { db } = require('./db/mongoose');
@@ -63,11 +64,40 @@ app.delete('/todos/:id', (req, res) => {
       return res.status(400).send();
     }
     // if success, send back to client
-    res.send(todo);
+    res.send({todo});
     //console.log('Successfully removed!', todo);
   }).catch( (e) => {
     res.status(400).send();
   });
+});
+
+app.patch('/todos/:id', (req, res) => {
+  var id = req.params.id;
+  // this is to get specific properties you want to user to update
+  // we don't want user to update anything they choose
+  // use lodash
+  var body = _.pick(req.body, ['text', 'completed']);
+
+  // if ObjectID is invalid send back a 404 status
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  if (_.isBoolean(body.completed) && body.completed) {
+    body.completedAt = new Date().getTime();
+  } else {
+    body.completed = false;
+    body.completedAt = null;
+  }
+  // with mongoose we update the database
+  Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+    if (!todo) {
+      return res.status(404).send();
+    }
+    res.send({ todo });
+  }).catch((e) => {
+    res.status(400).send();
+  })
 });
 
 app.listen(port, () => {
