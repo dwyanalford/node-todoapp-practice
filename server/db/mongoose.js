@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 // set up to use promises
 mongoose.Promise = global.Promise;
 
-// Database configuration with mongoose
-mongoose.connect("mongodb://localhost/TodoApp", {
+// Database configuration with mongoose & prep for deployment (production)
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/TodoApp", {
   useMongoClient: true
 });
 
