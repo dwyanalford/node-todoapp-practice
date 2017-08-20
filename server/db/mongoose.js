@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 // Database configuration with mongoose & prep for deployment (production)
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/TodoApp", {
+mongoose.connect(process.env.MONGODB_URI, {
   useMongoClient: true
 });
 
