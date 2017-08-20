@@ -11,7 +11,9 @@ const todos = [{
   text: 'Testing my todo part 1'
 }, {
   _id: new ObjectID(),
-  text: 'Testing my todo part 2'
+  text: 'Testing my todo part 2',
+  completed: true,
+  completedAt: 333
 }];
 
 // make sure databse base is zero before performing test
@@ -88,3 +90,47 @@ it('should return 404 if todo not found', (done) => {
   });
 
 });
+
+describe('PATCH /todos/:id', () => {
+  it('should update the todo', (done) => {
+    //grab id
+    var hexId = todos[0]._id.toHexString();
+    var text = 'This should be the new text';
+
+    // make patch request with supertest
+    request(app)
+      .patch(`/todos/${hexId}`)
+      .send({
+        completed: true,
+        text
+      })
+      .expect(200)
+      .expect( (res) => {
+        expect(res.body.todo.text).toBe(text);
+        expect(res.body.todo.completed).toBe(true);
+        expect(res.body.todo.completedAt).toBeA('number');
+      })
+      .end(done);
+});
+
+  it('should clear completedAt when todo is not completed', (done) => {
+    //grab id
+    var hexId = todos[0]._id.toHexString();
+    var text = 'This should be the new text!!';
+
+    // make patch request with supertest
+    request(app)
+      .patch(`/todos/${hexId}`)
+      .send({
+        completed: false,
+        text
+      })
+      .expect(200)
+      .expect( (res) => {
+        expect(res.body.todo.text).toBe(text);
+        expect(res.body.todo.completed).toBe(false);
+        expect(res.body.todo.completedAt).toNotExist();
+      })
+      .end(done);
+  });
+})
