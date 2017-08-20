@@ -49,6 +49,27 @@ app.get('/todos/:id', (req, res) => {
   });
 });
 
+app.delete('/todos/:id', (req, res) => {
+  //get the id
+  var id = req.params.id;
+  // if ObjectID is invalid send back a 404 status
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+  // with mongoose function, remove the todo by ID from the mongo database
+  Todo.findByIdAndRemove(id).then( (todo) => {
+    // if no todo then return err status of 400
+    if (!todo) {
+      return res.status(400).send();
+    }
+    // if success, send back to client
+    res.send(todo);
+    //console.log('Successfully removed!', todo);
+  }).catch( (e) => {
+    res.status(400).send();
+  });
+});
+
 app.listen(port, () => {
   console.log(`Started listening on port ${port} `);
 });
