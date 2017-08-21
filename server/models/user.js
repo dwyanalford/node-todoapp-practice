@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 // we need this to attach custom instance methods for, which we need
 // for authentication - creating tokens
@@ -80,6 +81,21 @@ UserSchema.statics.findbyToken = function (token) {
     'tokens.access': 'auth'
   })
 };
+
+// must provide 'next' argument and must call in the callback
+UserSchema.pre('save', function(next){
+  var user = this;
+
+  if (user.isModified('password')) {
+      bcrypt.hash(user.password, 10, (err, hash) => {
+        // we want the hash to be the password, so we override here
+        user.password = hash;
+        next();
+      });
+  } else {
+    next();
+  }
+});
 
 // create User model with validation
 var User = mongoose.model('User', UserSchema);
