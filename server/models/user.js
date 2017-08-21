@@ -63,6 +63,24 @@ UserSchema.methods.generateAuthToken  = function () {
   });
 };
 
+// this is a model method not instance method so use 'Capital letter: User'
+UserSchema.statics.findbyToken = function (token) {
+  var User = this;
+  var decoded; // to store 'jwt' values
+
+  try {
+    decoded = jwt.verify(token, 'abc123');
+  } catch (e) {
+    return Promise.reject('Authenication Denied. Please Sign up');
+  }
+  //Success
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  })
+};
+
 // create User model with validation
 var User = mongoose.model('User', UserSchema);
 
