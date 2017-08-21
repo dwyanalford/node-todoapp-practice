@@ -16,11 +16,13 @@ const todos = [{
   completedAt: 333
 }];
 
-// make sure databse base is zero before performing test
+//make sure databse base is zero before performing test
 // otherwise logic does not make sense below
-// beforeEach( (done) => {
-//   Todo.remove({}).then( () => done());
-// });
+beforeEach((done) => {
+  Todo.remove({}).then(() => {
+    return Todo.insertMany(todos);
+  }).then( () => done());
+});
 
 describe('POST /todos', () => {
   it('should create a new todo', (done) => {
@@ -78,7 +80,7 @@ it('should return 404 if todo not found', (done) => {
 
     request(app)
       .get(`/todos/${hexId}`)
-      .expect(404)
+      .expect(200)
       .end(done);
   });
 
