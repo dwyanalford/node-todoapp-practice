@@ -138,8 +138,17 @@ app.post('/users/login', (req, res) => {
   })
 });
 
+// this is the 'log out' route; logging out the logged in
+app.delete('/users/me/token', authenticate, (req, res) => {
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send();
+  }, () => {
+    res.status(400).send();
+  });
+});
+
 app.listen(port, () => {
-  console.log(`Started listening on port ${port} `);
+  console.log(`ToDoApp listening on port ${port} `);
 });
 
 // made accessible for testing purposes
