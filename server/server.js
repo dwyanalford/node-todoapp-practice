@@ -104,7 +104,7 @@ app.patch('/todos/:id', (req, res) => {
 });
 
 // POST new user
-app.post('/user', (req, res) => {
+app.post('/users', (req, res) => {
     var body = _.pick(req.body, ['email', 'password']);
     // note: now only 'email' and 'password' will be avail on the body below
     var user = new User(body);
@@ -118,8 +118,24 @@ app.post('/user', (req, res) => {
     })
 });
 
-app.get('/user/me', authenticate, (req, res) => {
+app.get('/users/me', authenticate, (req, res) => {
   res.send(req.user);
+});
+
+// need a dedicated route for logging in users, POST /users/login
+app.post('/users/login', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+
+  // defined in user.js or User model
+  User.findByCredentials(body.email, body.password).then( (user) => {
+    // create a new token in response to http request
+    user.generateAuthToken().then((token) => {
+      res.header('x-auth', token).send(user);
+    });
+    // note this catch case will trigger if no user found from user.js
+  }).catch( (e) => {
+    res.status(400).send();
+  })
 });
 
 app.listen(port, () => {

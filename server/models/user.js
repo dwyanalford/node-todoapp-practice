@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs'); // one way
 
 // we need this to attach custom instance methods for, which we need
 // for authentication - creating tokens
@@ -10,19 +10,19 @@ var UserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    minLength: 1,
+    minlength: 1,
     trim: true,
     unique: true,
     validate: {
       isAsync: true,
       validator: validator.isEmail,
-      message: '{value} is not a valid email'
+      message: '{VALUE} is not a valid email'
     }
   },
   password: {
     type: String,
     require: true,
-    minLength: 6
+    minlength: 6
   },
   tokens: [{
     access: {
@@ -80,6 +80,30 @@ UserSchema.statics.findbyToken = function (token) {
     'tokens.token': token,
     'tokens.access': 'auth'
   })
+};
+
+
+UserSchema.statics.findByCredentials = function(email, password) {
+  // find user where email equals email sent
+  var User = this;
+
+  return User.findOne({email}).then( (user) => {
+    if (!user) {
+      // return a rejected Promise
+      return Promise.reject();
+    }
+
+    return new Promise( (resolve, reject) => {
+      // compare user with password
+      bcrypt.compare(password, user.password, (err, res) => {
+        if (res) {
+          resolve(user);
+        } else {
+          reject();
+        }
+      });
+    });
+  });
 };
 
 // must provide 'next' argument and must call in the callback
