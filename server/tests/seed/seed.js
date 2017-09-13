@@ -24,12 +24,14 @@ const users = [{
 // ADDING SOME SEED DATA
 const todos = [{
   _id: new ObjectID(),
-  text: 'Testing my todo part 1'
+  text: 'Testing my todo part 1',
+  _creator: userOneId
 }, {
   _id: new ObjectID(),
   text: 'Testing my todo part 2',
   completed: true,
-  completedAt: 333
+  completedAt: 333,
+  _creator: userTwoId
 }];
 
 //make sure databse base is zero before performing test

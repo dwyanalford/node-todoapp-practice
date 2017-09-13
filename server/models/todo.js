@@ -15,6 +15,12 @@ var Todo = mongoose.model('Todo', {
     type: Number,
     default: null
   },
+  // id of user who created the todo, so that user does have access to
+  // manage this data
+  _creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
+  }
 });
 
 module.exports = { Todo };
